@@ -1,32 +1,10 @@
 import React, { useState } from "react";
 
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import {
-    Container,
-    makeStyles,
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Typography,
-} from "@material-ui/core";
-import { Item, TodoCompletedItem } from "./common";
+import { Container } from "@material-ui/core";
+import { Item, TodoCompletedList } from "./common";
 import { Form } from "./common/Todo/Form";
 import { TodoItem } from "./common/types";
 
-const useStyles = makeStyles({
-    accordion: {
-        boxShadow: "none",
-        borderTop: "1px solid black",
-        marginTop: "20px",
-    },
-    accordionDetails: {
-        display: "block",
-        paddingLeft: "0px",
-    },
-    accordionSummary: {
-        paddingLeft: "4.2%",
-    }
-});
 
 export interface TodoAppProps {
     defaultItems?: TodoItem[];
@@ -36,7 +14,7 @@ export interface TodoAppProps {
 function TodoApp(props: TodoAppProps) {
     const { defaultItems = [], onChange } = props;
     const [items, setItems] = useState<TodoItem[]>(defaultItems);
-    const classes = useStyles();
+
     const setItemsCallback = (updatedItems: TodoItem[]) => {
         setItems(updatedItems);
         onChange(updatedItems);
@@ -54,8 +32,6 @@ function TodoApp(props: TodoAppProps) {
         }
     };
     const completedItems = items.filter((item: TodoItem) => item.isComplete);
-    const completedItemsLength = completedItems.length;
-
     const todoItems = items.filter((item: TodoItem) => !item.isComplete);
 
     return (
@@ -72,33 +48,11 @@ function TodoApp(props: TodoAppProps) {
                     />
                 );
             })}
-            {completedItemsLength > 0 && (
-                <Accordion className={classes.accordion} defaultExpanded={true}>
-                    <AccordionSummary
-                        className={classes.accordionSummary}
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel1a-content"
-                        id="panel1a-header"
-                    >
-                        <Typography>
-                            {" "}
-                            {completedItemsLength} Completed items{" "}
-                        </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails className={classes.accordionDetails}>
-                        {completedItems.map((item, index) => {
-                            return (
-                                <TodoCompletedItem
-                                    items={items}
-                                    key={item.uuid}
-                                    itemIndex={index}
-                                    setItemsCallback={setItemsCallback}
-                                />
-                            );
-                        })}
-                    </AccordionDetails>
-                </Accordion>
-            )}
+            <TodoCompletedList
+                items={items}
+                completedItems={completedItems} 
+                setItemsCallback={setItemsCallback}
+            />
         </Container>
     );
 }
